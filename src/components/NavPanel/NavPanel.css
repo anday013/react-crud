@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&family=Roboto:wght@500&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100%;
+    width: 220px;
+    transition: width 0.2s;
+    background-color: #F1F1F1;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.sidebar header {
+    background-color: #1b1b1b;
+    font-style: 28px;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 70px;
+    color: white;
+    text-align: center;
+    text-transform: capitalize;
+    user-select: none;
+}
+
+.sidebar a {
+    padding: 10px 8px;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #37474f;
+    letter-spacing: 1px;
+}
+
+.sidebar a svg {
+    vertical-align: text-bottom;
+}
+
+.sidebar a:hover:not(.active) {
+    transition: all 0.2s;
+    background-color: rgba(38, 50, 56, 0.08);
+}
+
+.sidebar .active {
+    background-color: #3f51b5;
+    color: #fff;
+    font-weight: 500;
+}
+
+.sidebar a span {
+    margin-left: 5px;
+}
+
+@media (max-width: 860px) {
+    .sidebar {
+        width: 50px;
+        transition: width 0.2s;
+    }
+    .sidebar a span {
+        display: none;
+    }
+}
