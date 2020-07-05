@@ -1,0 +1,26 @@
+.list {
+    margin-left: 250px;
+}
+
+.list table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #ddd;
+    width: 90%;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 8px;
+}
+
+tbody tr:hover {
+    background-color: #bfc4e1;
+    cursor: pointer;
+}
+
+tr:nth-child(even),
+thead tr {
+    background-color: #f2f2f2;
+}

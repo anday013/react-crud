@@ -3,32 +3,34 @@ import { Dashboard } from '@material-ui/icons'
 import './NavPanel.css';
 import { NavLink } from 'react-router-dom'
 
-interface NavBarProps{
+interface NavBarProps {
     header: string,
-    children?: any
+    children?: any,
 }
 
-interface NavElementProps {
-    link?: string,
-    children?: any
-}
 const Navbar = (props: NavBarProps) => {
     return (
         <div className="sidebar">
             <header>{props.header}</header>
-            {props.children}
+            <div className="sidebar-links">{props.children}</div>
         </div>
     )
 }
 
+
+interface NavElementProps {
+    link?: string,
+    children?: any
+    onClick?: any
+}
+
 const NavElement = (props: NavElementProps) => {
-    const classes: string[] = [];
-    const { link, children } = props;
+    const { link, children, onClick } = props;
     return (
-            <NavLink to={link ? link : '#'} exact>
-                <Dashboard />
-                <span>{children}</span>
-            </NavLink>
+        <NavLink to={link ? link : '#'} exact onClick={onClick}>
+            <Dashboard />
+            <span>{children}</span>
+        </NavLink>
     )
 }
 
