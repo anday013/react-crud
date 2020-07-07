@@ -1,8 +1,8 @@
 import React from 'react';
-import IndexPage from './pages'
+import DemoPage from './pages'
 const App = () => {
   return (
-      <IndexPage />
+      <DemoPage />
   );
 }
 

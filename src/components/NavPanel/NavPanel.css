@@ -36,6 +36,7 @@ a {
 .sidebar a {
     padding: 10px 8px;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    text-transform: capitalize;
     font-size: 14px;
     font-weight: 500;
     color: #37474f;

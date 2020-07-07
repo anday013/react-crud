@@ -6,19 +6,27 @@ import './List.css'
 
 interface ListProps {
     listURL: string,
+    id: number,
     children?: Array<any>,
-    isLoaded?: boolean,
-    data?: [],
+    lists: Array<listInterface>,
     setListLoaded?: any
 }
 
-const List: React.FC<ListProps> = (props: ListProps) => {
-    const { listURL, children, isLoaded, data, setListLoaded } = props;
+interface listInterface {
+    listLoaded: boolean,
+    data: []
+}
+
+const List: React.FC<ListProps> = props => {
+    const { listURL, id, children, lists, setListLoaded } = props;
+
+    const data = lists[id]?.data; // List data
+
     useEffect(() => {
-        if (!isLoaded) {
-            provider.getList(listURL).then(res => setListLoaded(res.data))
-        }
-    }, [])
+        if (!lists[id]?.listLoaded)
+            provider.getList(listURL).then(res => setListLoaded(res.data, id))
+
+    }, [lists[id]?.listLoaded])
 
     const fieldChecker = (list: any, index: any) => {
         if (list[index] === undefined) {
@@ -27,30 +35,37 @@ const List: React.FC<ListProps> = (props: ListProps) => {
         }
         return list[index]
     }
+    const renderHeaders = (headersArr) => {
+        return headersArr?.map((field, index) => {
+            if (field.type.name === 'TextField')
+                return (
+                    <td key={index}>{field.props.fieldName}</td>
+                )
+        })
+    }
+
+    const renderBody = (bodyArr, headersArr) => {
+        return bodyArr?.map((element, index) => (
+            <tr key={index}>
+                {headersArr?.map((field, index2) => {
+                    if (field.type.name === 'TextField')
+                        return (
+                            <td key={index2}>{fieldChecker(element, field.props.fieldName)}</td>
+                        )
+                })}
+            </tr>
+        ))
+    }
     return (
         <div className="list" style={{ overflowX: 'auto' }}>
             <table>
                 <thead>
                     <tr>
-                        {children?.map((field, index) => {
-                            if (field.type.name === 'TextField')
-                                return (
-                                    <td key={index}>{field.props.fieldName}</td>
-                                )
-                        })}
+                        {renderHeaders(children)}
                     </tr>
                 </thead>
                 <tbody>
-                    {data?.map((element, index) => (
-                        <tr key={index}>
-                            {children?.map((field, index2) => {
-                                if (field.type.name === 'TextField')
-                                    return (
-                                        <td key={index2}>{fieldChecker(element, field.props.fieldName)}</td>
-                                    )
-                            })}
-                        </tr>
-                    ))}
+                    {renderBody(data, children)}
                 </tbody>
             </table>
         </div>
@@ -58,12 +73,11 @@ const List: React.FC<ListProps> = (props: ListProps) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    isLoaded: state.list.listLoaded,
-    data: state.list.data
+    lists: state.list.lists
 })
 
 const mapDispatchToProps = (dispatch: any) => ({
-    setListLoaded: (data) => dispatch({ type: actionTypes.LOADED, data: data })
+    setListLoaded: (data, id) => dispatch({ type: actionTypes.LOADED, data: data, id: id })
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);
