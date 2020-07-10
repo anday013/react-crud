@@ -1,12 +1,12 @@
 .list {
-    margin-left: 250px;
+    margin-left: 30px;
 }
 
 .list table {
     border-collapse: collapse;
     border-spacing: 0;
     border: 1px solid #ddd;
-    width: 90%;
+    width: 95%;
 }
 
 th,

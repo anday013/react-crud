@@ -1,0 +1,48 @@
+.form-data {
+    display: flex;
+    padding: 1px;
+    margin-top: 6px;
+}
+
+.form-data label {
+    text-transform: capitalize;
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+.col-25 {
+    width: 25%;
+}
+
+.col-75 {
+    width: 75%;
+}
+
+input[type=text],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+input[type=text]:focus,
+select:focus,
+textarea:focus {
+    outline: 0;
+    border-color: #3f51b5;
+}
+
+@media screen and (max-width: 860px) {
+    .form-data {
+        flex-direction: column;
+    }
+    .col-25,
+    .col-75,
+    input[type=submit] {
+        transition: width 0.3s ease-in-out;
+        width: 100%;
+    }
+}

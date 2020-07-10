@@ -19,15 +19,15 @@ const Navbar = (props: NavBarProps) => {
 
 
 interface NavElementProps {
-    link?: string,
-    children?: any
+    link: string,
+    children: string
     onClick?: any
 }
 
 const NavElement = (props: NavElementProps) => {
     const { link, children, onClick } = props;
     return (
-        <NavLink to={link ? link : '#'} exact onClick={onClick}>
+        <NavLink to={link} exact onClick={onClick}>
             <Dashboard />
             <span>{children}</span>
         </NavLink>

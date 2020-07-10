@@ -16,10 +16,10 @@ a {
     position: fixed;
     height: 100%;
     width: 220px;
-    transition: width 0.2s;
     background-color: #F1F1F1;
     overflow: auto;
     white-space: nowrap;
+    transition: width 0.3s ease-in-out;
 }
 
 .sidebar header {
@@ -36,6 +36,7 @@ a {
 .sidebar a {
     padding: 10px 8px;
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    text-transform: capitalize;
     font-size: 14px;
     font-weight: 500;
     color: #37474f;
@@ -64,7 +65,7 @@ a {
 @media (max-width: 860px) {
     .sidebar {
         width: 50px;
-        transition: width 0.2s;
+        transition: width 0.3s ease-in-out;
     }
     .sidebar a span {
         display: none;
