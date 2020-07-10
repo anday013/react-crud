@@ -1,0 +1,10 @@
+.container {
+    margin-left: 220px;
+}
+
+@media (max-width: 860px) {
+    .container {
+        margin-left: 50px;
+        transition: margin-left 0.3s ease-in-out;
+    }
+}

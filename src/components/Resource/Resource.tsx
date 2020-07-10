@@ -3,16 +3,16 @@ import { NavPanel } from '../'
 
 interface ResourceProps {
     name: string,
-    path?: string,
-    list: React.ReactNode
+    route?: string,
+    list: React.ReactNode,
+    create?: React.ReactNode
 
 
 }
 
-const Resource = (props: ResourceProps) => {
-    const { name, path } = props;
+const Resource:React.FC<ResourceProps> = ({ name, route }) => {
     return (
-        <NavPanel.NavElement link={path ? path : `/${name}`}>{name}</NavPanel.NavElement>
+        <NavPanel.NavElement link={route ? route : `/${name}`}>{name}</NavPanel.NavElement>
     )
 }
 
