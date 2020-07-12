@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import provider from '../../provider'
@@ -9,7 +9,7 @@ interface ListProps {
     id: number,
     children?: Array<any>,
     lists: Array<listInterface>,
-    setListLoaded?: any
+    setListLoaded?: any,
 }
 
 interface listInterface {
@@ -20,13 +20,12 @@ interface listInterface {
 const List: React.FC<ListProps> = props => {
     const { listURL, id, children, lists, setListLoaded } = props;
 
-    const data = lists[id]?.data; // List data
-
     useEffect(() => {
         if (!lists[id]?.listLoaded)
-            provider.getList(listURL).then(res => setListLoaded(res.data, id))
-
-    }, [lists[id]?.listLoaded])
+            provider.getList(listURL).then(res => {
+                setListLoaded(res.data, id)
+            })
+    }, [])
 
     const fieldChecker = (list: any, index: any) => {
         if (list[index] === undefined) {
@@ -56,6 +55,7 @@ const List: React.FC<ListProps> = props => {
             </tr>
         ))
     }
+    console.log(id)
     return (
         <div className="list" style={{ overflowX: 'auto' }}>
             <table>
@@ -65,7 +65,7 @@ const List: React.FC<ListProps> = props => {
                     </tr>
                 </thead>
                 <tbody>
-                    {renderBody(data, children)}
+                    {renderBody(lists[id]?.data, children)}
                 </tbody>
             </table>
         </div>
@@ -77,7 +77,7 @@ const mapStateToProps = (state: any) => ({
 })
 
 const mapDispatchToProps = (dispatch: any) => ({
-    setListLoaded: (data, id) => dispatch({ type: actionTypes.LOADED, data: data, id: id })
+    setListLoaded: (data, id) => dispatch({ type: actionTypes.LOADED, data: data, id: id }),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);
