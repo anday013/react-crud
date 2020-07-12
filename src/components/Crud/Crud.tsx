@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavPanel, Create } from '../'
+import { connect } from 'react-redux'
+import * as actionTypes from '../../store/actions'
 import {
     BrowserRouter as Router,
     Switch,
@@ -8,10 +10,15 @@ import {
 import "./Crud.css"
 
 interface CrudProps {
-    children?: any
+    children?: any,
+    setNumberOfLists?: any
 }
 
 const Crud: React.FC<CrudProps> = props => {
+    
+    useEffect(() => {
+        props.setNumberOfLists(React.Children.count(props.children))
+    }, [])
 
     const NavMenu = (elements) => (
         <NavPanel.Navbar header="my menu">
@@ -34,29 +41,31 @@ const Crud: React.FC<CrudProps> = props => {
         })
     )
     const renderListsRoute = resources => (
-            resources?.map((res, index) => {
-                const { name, route, list, create } = res.props
-                return (
-                    <Route key={index} path={route ? route : `/${name}`} exact>
-                        {list}
-                    </Route>
-                )
-            })
-        )
-return (
-    <Router>
-        {NavMenu(props.children)}
-        <div className="container">
-            <Switch>
-                <Route path="/" exact />
-                {renderListsRoute(props.children)}
-                {renderCreatesRoute(props.children)}
-                <Route path="/about" />
-            </Switch>
-        </div>
-    </Router>
-)
+        resources?.map((res, index) => {
+            const { name, route, list, create } = res.props
+            return (
+                <Route key={index} path={route ? route : `/${name}`} exact>
+                    {list}
+                </Route>
+            )
+        })
+    )
+    return (
+        <Router>
+            {NavMenu(props.children)}
+            <div className="container">
+                <Switch>
+                    <Route path="/" exact />
+                    {renderListsRoute(props.children)}
+                    {renderCreatesRoute(props.children)}
+                    <Route path="/about" />
+                </Switch>
+            </div>
+        </Router>
+    )
 }
 
-
-export default Crud
+const mapDispatchToProps = (dispatch: any) => ({
+    setNumberOfLists: (number) => dispatch({ type: actionTypes.SET_NUMBER_OF_LISTS, numberOfLists: number })
+})
+export default connect(null, mapDispatchToProps)(Crud)

@@ -4,13 +4,20 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import reducers from './store/reducers'
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 
 const rootReducer = combineReducers({
   list: reducers.listReducer
 })
-const store = createStore(rootReducer);
+
+const logger = store => next => action =>{
+  console.log('[Middleware] dispatching ', action)
+  const result = next(action)
+  console.log('[Middleware] next state ', store.getState())
+  return result
+}
+const store = createStore(rootReducer, applyMiddleware(logger));
 
 ReactDOM.render(
   <React.StrictMode>
