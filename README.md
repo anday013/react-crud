@@ -1,4 +1,7 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Documentation
+
+### Introduction
+Simple React library helps you to create powerfull CRUD system. 
 
 ## Available Scripts
 
