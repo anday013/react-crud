@@ -1,44 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import provider from '../../provider'
 import './List.css'
+import { listType } from '../../store/stateTypes'
 
 interface ListProps {
     listURL: string,
     id: number,
     children?: Array<any>,
-    lists: Array<listInterface>,
+    lists: Array<listType>,
     setListLoaded?: any,
+    name?: string
 }
 
-interface listInterface {
-    listLoaded: boolean,
-    data: []
-}
 
 const List: React.FC<ListProps> = props => {
-    const { listURL, id, children, lists, setListLoaded } = props;
-
+    const { listURL, id, children, lists, setListLoaded, name } = props;
     useEffect(() => {
         if (!lists[id]?.listLoaded)
             provider.getList(listURL).then(res => {
-                setListLoaded(res.data, id)
+                setListLoaded(name, res.data, id)
             })
     }, [])
 
-    const fieldChecker = (list: any, index: any) => {
-        if (list[index] === undefined) {
-            console.error(`${index} field could not be found in list:`, list)
-            return ''
-        }
-        return list[index]
-    }
     const renderHeaders = (headersArr) => {
         return headersArr?.map((field, index) => {
             if (field.type.name === 'TextField')
                 return (
-                    <td key={index}>{field.props.fieldName}</td>
+                    <td key={index}>{field.props.label || field.props.fieldName}</td>
+                )
+            else if(field.type.name === 'ReferenceField') 
+                return (
+                <td key={index}>{field.props.label || field.props.foreignKey}</td> 
                 )
         })
     }
@@ -49,13 +43,22 @@ const List: React.FC<ListProps> = props => {
                 {headersArr?.map((field, index2) => {
                     if (field.type.name === 'TextField')
                         return (
-                            <td key={index2}>{fieldChecker(element, field.props.fieldName)}</td>
+                            <td key={index2}>{React.cloneElement(field, { ...field.props, record: element })}</td>
                         )
+                    else if (field.type.name === 'ReferenceField') {
+                        return (
+                            <td key={index2}>{React.cloneElement(field, {
+                                ...field.props,
+                                lists: lists,
+                                record: element
+                            })}</td>
+                        )
+                    }
                 })}
             </tr>
         ))
     }
-    console.log(id)
+    console.log('children', children)
     return (
         <div className="list" style={{ overflowX: 'auto' }}>
             <table>
@@ -72,12 +75,12 @@ const List: React.FC<ListProps> = props => {
     )
 }
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = state => ({
     lists: state.list.lists
 })
 
-const mapDispatchToProps = (dispatch: any) => ({
-    setListLoaded: (data, id) => dispatch({ type: actionTypes.LOADED, data: data, id: id }),
+const mapDispatchToProps = dispatch => ({
+    setListLoaded: (name, data, id) => dispatch({ type: actionTypes.LOADED, listName: name, data: data, id: id }),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);

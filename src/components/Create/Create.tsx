@@ -1,26 +1,31 @@
 import React, { FormEvent, useState } from 'react';
+import { connect } from 'react-redux'
+import * as actionTypes from '../../store/actions'
 import './Create.css'
-import { TextInput } from '../';
 import Axios from 'axios';
 
 interface CreateProps {
     header: string,
     submitURL: string,
+    listName?: string,
+    unloadList?: any,
     children: any
-    
+
 }
 
 const Create: React.FC<CreateProps> = (props) => {
-    const { header, submitURL, children } = props
+    const { header, submitURL,listName, unloadList, children } = props
     const [fieldValues, setFieldValues] = useState({})
     const onInputsChange = (inputName: string, value) => {
-        setFieldValues({...fieldValues, [`${inputName}`]: value})
+        setFieldValues({ ...fieldValues, [`${inputName}`]: value })
     }
     const newChildren = React.Children.map(children, child => React.cloneElement(child, {
         onChange: onInputsChange
     }))
     const submitHandler = (event: FormEvent) => {
-        Axios.post(submitURL, fieldValues).then(res => console.log(res)).catch(err => console.error(err))
+        Axios.post(submitURL, fieldValues)
+            .then(res => unloadList(listName))
+            .catch(err => console.error(err))
         event.preventDefault();
     }
     return (
@@ -38,4 +43,9 @@ const Create: React.FC<CreateProps> = (props) => {
     )
 }
 
-export default Create
+
+
+const mapDispatchToProps = dispatch => ({
+    unloadList: (listName) => dispatch({ type: actionTypes.UNLOAD, listName: listName })
+})
+export default connect(null, mapDispatchToProps)(Create)

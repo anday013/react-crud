@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavPanel, Create } from '../'
+import { NavPanel } from '../'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import {
@@ -35,17 +35,23 @@ const Crud: React.FC<CrudProps> = props => {
             if (create)
                 return (
                     <Route key={index} path={`/${name}/create`} exact>
-                        {create}
+                        {React.cloneElement(create, {
+                            ...create.props,
+                            listName: name
+                        })}
                     </Route>
                 )
         })
     )
     const renderListsRoute = resources => (
         resources?.map((res, index) => {
-            const { name, route, list, create } = res.props
+            const { name, route, list } = res.props
             return (
                 <Route key={index} path={route ? route : `/${name}`} exact>
-                    {list}
+                    {React.cloneElement(list, {
+                        ...list.props,
+                        name: name
+                    })}
                 </Route>
             )
         })
