@@ -5,7 +5,8 @@ interface ResourceProps {
     name: string,
     route?: string,
     list: React.ReactNode,
-    create?: React.ReactNode
+    create?: React.ReactNode,
+    edit?: React.ReactNode
 
 
 }

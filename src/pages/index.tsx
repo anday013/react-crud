@@ -1,11 +1,13 @@
 import React from 'react'
-import { List, TextField, Crud, Resource, Create, TextInput } from '../components'
+import { List, TextField, Crud, Resource, Create, TextInput, ReferenceField, Edit } from '../components'
 
 
 const Index: React.FC = () => {
     const list1 = () => (<List listURL='https://jsonplaceholder.typicode.com/posts' id={0}>
         <TextField fieldName="id" />
-        <TextField fieldName="userId" />
+        <ReferenceField foreignKey="userId" reference="users" primaryKey="id" label="User Name">
+            <TextField fieldName="name" />
+        </ReferenceField>
         <TextField fieldName="title" />
         <TextField fieldName="body" />
     </List>)
@@ -22,6 +24,17 @@ const Index: React.FC = () => {
             <TextInput fieldName="body" />
         </Create>
     )
+    const edit1 = () => (
+        <Edit header="Posts" submitURL='https://jsonplaceholder.typicode.com/posts'>
+            <TextInput fieldName="title" />
+            <TextInput fieldName="body" />
+        </Edit>
+    )
+    const edit2 = () => (
+        <Edit header="Users" submitURL='https://jsonplaceholder.typicode.com/users'>
+            <TextInput fieldName="name" />
+        </Edit>
+    )
     const create2 = () => (
         <Create header="Users" submitURL='https://jsonplaceholder.typicode.com/users'>
             <TextInput fieldName="name" />
@@ -29,8 +42,8 @@ const Index: React.FC = () => {
     )
     return (
         <Crud>
-            <Resource list={list1()} name="posts" create={create1()}/>
-            <Resource list={list2()} name="users" create={create2()} />
+            <Resource list={list1()} name="posts" create={create1()} edit={edit1()} />
+            <Resource list={list2()} name="users" create={create2()} edit={edit2()} />
         </Crud>
     )
 }

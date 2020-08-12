@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavPanel, Create } from '../'
+import { NavPanel, Edit } from '../'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import {
@@ -15,7 +15,7 @@ interface CrudProps {
 }
 
 const Crud: React.FC<CrudProps> = props => {
-    
+
     useEffect(() => {
         props.setNumberOfLists(React.Children.count(props.children))
     }, [])
@@ -35,19 +35,40 @@ const Crud: React.FC<CrudProps> = props => {
             if (create)
                 return (
                     <Route key={index} path={`/${name}/create`} exact>
-                        {create}
+                        {React.cloneElement(create, {
+                            ...create.props,
+                            listName: name
+                        })}
                     </Route>
                 )
         })
     )
     const renderListsRoute = resources => (
         resources?.map((res, index) => {
-            const { name, route, list, create } = res.props
+            const { name, route, list } = res.props
             return (
                 <Route key={index} path={route ? route : `/${name}`} exact>
-                    {list}
+                    {React.cloneElement(list, {
+                        ...list.props,
+                        name: name
+                    })}
                 </Route>
             )
+        })
+    )
+
+
+    const renderEditRoutes = resources => (
+        resources?.map((res, index) => {
+            const { name, edit } = res.props
+            if (edit)
+                return (
+                    <Route key={index} path={`/${name}/edit/:id`} exact component={(routeProps) => React.cloneElement(edit, {
+                        ...edit.props,
+                        ...routeProps,
+                        listName: name,
+                    })}/>
+                )
         })
     )
     return (
@@ -59,6 +80,7 @@ const Crud: React.FC<CrudProps> = props => {
                     {renderListsRoute(props.children)}
                     {renderCreatesRoute(props.children)}
                     <Route path="/about" />
+                    {renderEditRoutes(props.children)}
                 </Switch>
             </div>
         </Router>

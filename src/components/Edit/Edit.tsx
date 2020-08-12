@@ -1,27 +1,45 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useState, useEffect } from 'react';
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
-import './Create.css'
-import Axios from 'axios';
-
-interface CreateProps {
+import './Edit.css'
+import provider from '../../provider';
+import Axios from 'axios'
+interface EditProps {
     header: string,
     submitURL: string,
     listName?: string,
     unloadList?: any,
-    children: any
-
+    children: any,
+    match?: any
 }
 
-const Create: React.FC<CreateProps> = (props) => {
-    const { header, submitURL,listName, unloadList, children } = props
+const Edit: React.FC<EditProps> = props => {
+    const { header, submitURL, listName, unloadList, children } = props
     const [fieldValues, setFieldValues] = useState({})
+    const [data, setData] = useState({});
+
+    useEffect(() => {
+        
+    }, [])
+
     const onInputsChange = (inputName: string, value) => {
         setFieldValues({ ...fieldValues, [`${inputName}`]: value })
     }
-    const newChildren = React.Children.map(children, child => React.cloneElement(child, {
-        onChange: onInputsChange
-    }))
+
+    console.log('props', props)
+    const newChildren = React.Children.map(children, child => {
+        if (data)
+            React.cloneElement(child, {
+                ...child.props,
+                value: data[child.props.fieldName],
+                onChange: onInputsChange
+            })
+        else
+            React.cloneElement(child, {
+                ...child.props,
+                onChange: onInputsChange
+            })
+    })
     const submitHandler = (event: FormEvent) => {
         Axios.post(submitURL, fieldValues)
             .then(res => unloadList(listName))
@@ -36,7 +54,7 @@ const Create: React.FC<CreateProps> = (props) => {
                 </header>
                 {newChildren}
                 <div className="row">
-                    <input type="submit" value="Create" />
+                    <input type="submit" value="Edit" />
                 </div>
             </form>
         </div>
@@ -48,4 +66,4 @@ const Create: React.FC<CreateProps> = (props) => {
 const mapDispatchToProps = dispatch => ({
     unloadList: (listName) => dispatch({ type: actionTypes.UNLOAD, listName: listName })
 })
-export default connect(null, mapDispatchToProps)(Create)
+export default connect(null, mapDispatchToProps)(Edit)

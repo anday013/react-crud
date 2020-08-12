@@ -1,68 +1,80 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import provider from '../../provider'
 import './List.css'
+import { listType } from '../../store/stateTypes'
+import { NavLink } from 'react-router-dom'
 
 interface ListProps {
     listURL: string,
     id: number,
     children?: Array<any>,
-    lists: Array<listInterface>,
+    lists: Array<listType>,
     setListLoaded?: any,
+    name?: string
 }
 
-interface listInterface {
-    listLoaded: boolean,
-    data: []
-}
 
 const List: React.FC<ListProps> = props => {
-    const { listURL, id, children, lists, setListLoaded } = props;
-
+    const { listURL, id, children, lists, setListLoaded, name } = props;
     useEffect(() => {
+        provider.getOne(listURL, 1).then(({ data }) => console.log('getOne', data))
         if (!lists[id]?.listLoaded)
             provider.getList(listURL).then(res => {
-                setListLoaded(res.data, id)
+                setListLoaded(name, res.data, id)
             })
     }, [])
 
-    const fieldChecker = (list: any, index: any) => {
-        if (list[index] === undefined) {
-            console.error(`${index} field could not be found in list:`, list)
-            return ''
-        }
-        return list[index]
-    }
     const renderHeaders = (headersArr) => {
-        return headersArr?.map((field, index) => {
-            if (field.type.name === 'TextField')
-                return (
-                    <td key={index}>{field.props.fieldName}</td>
-                )
-        })
+        return <tr>
+            {headersArr?.map((field, index) => {
+                if (field.type.name === 'TextField')
+                    return (
+                        <td key={index}>{field.props.label || field.props.fieldName}</td>
+                    )
+                else if (field.type.name === 'ReferenceField')
+                    return (
+                        <td key={index}>{field.props.label || field.props.foreignKey}</td>
+                    )
+            })}
+            {<td>Edit</td>}
+        </tr>
     }
 
     const renderBody = (bodyArr, headersArr) => {
-        return bodyArr?.map((element, index) => (
-            <tr key={index}>
-                {headersArr?.map((field, index2) => {
-                    if (field.type.name === 'TextField')
-                        return (
-                            <td key={index2}>{fieldChecker(element, field.props.fieldName)}</td>
-                        )
-                })}
-            </tr>
-        ))
+        const editButton = (name, id) => <td><NavLink to={`${name}/edit/${id}`} exact>Edit</NavLink></td>
+        const updateFieldProps = (field, newProps) => React.cloneElement(field, {
+            ...field.props,
+            ...newProps
+        })
+        return bodyArr?.map((element, index) => {
+            return (
+                <tr key={index}>
+                    {headersArr?.map((field, index2) => {
+                        if (field.type.name === 'TextField')
+                            return (
+                                <td key={index2}>{updateFieldProps(field, { record: element })}</td>
+                            )
+                        else if (field.type.name === 'ReferenceField') {
+                            return (
+                                <td key={index2}>{updateFieldProps(field, {
+                                    lists: lists,
+                                    record: element
+                                })}</td>
+                            )
+                        }
+                    })}
+                    {editButton(name, element['id'])}
+                </tr>
+            )
+        })
     }
-    console.log(id)
     return (
         <div className="list" style={{ overflowX: 'auto' }}>
             <table>
                 <thead>
-                    <tr>
-                        {renderHeaders(children)}
-                    </tr>
+                    {renderHeaders(children)}
                 </thead>
                 <tbody>
                     {renderBody(lists[id]?.data, children)}
@@ -72,12 +84,12 @@ const List: React.FC<ListProps> = props => {
     )
 }
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = state => ({
     lists: state.list.lists
 })
 
-const mapDispatchToProps = (dispatch: any) => ({
-    setListLoaded: (data, id) => dispatch({ type: actionTypes.LOADED, data: data, id: id }),
+const mapDispatchToProps = dispatch => ({
+    setListLoaded: (name, data, id) => dispatch({ type: actionTypes.LOADED, listName: name, data: data, id: id }),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(List);

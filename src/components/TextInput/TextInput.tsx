@@ -3,11 +3,12 @@ import './TextInput.css'
 interface TextInputProps {
     fieldName: string,
     label?: string,
-    onChange?: any
+    onChange?: any,
+    value?: any
 }
 
 const TextInput: React.FC<TextInputProps> = (props) => {
-    const { fieldName, label, onChange } = props
+    const { fieldName, label, onChange, value } = props
     const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1)
     return (
         <div className="form-data">
@@ -20,6 +21,7 @@ const TextInput: React.FC<TextInputProps> = (props) => {
                     id={fieldName}
                     placeholder={label ? capitalize(label) + '...' : capitalize(fieldName) + '...'}
                     onChange={(event) => onChange(fieldName, event.target.value)}
+                    value={value}
                 />
             </div>
         </div>
