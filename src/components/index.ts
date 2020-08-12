@@ -6,15 +6,17 @@ import ReferenceField from './ReferenceField'
 import TextInput from './TextInput'
 import Crud from './Crud'
 import Create from './Create'
+import Edit from './Edit'
 
 
 export {
     Crud,
     List,
     Create,
+    Edit,
     NavPanel,
     Resource,
     TextField,
     ReferenceField,
-    TextInput
+    TextInput,
 }

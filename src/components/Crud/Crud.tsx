@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavPanel } from '../'
+import { NavPanel, Edit } from '../'
 import { connect } from 'react-redux'
 import * as actionTypes from '../../store/actions'
 import {
@@ -15,7 +15,7 @@ interface CrudProps {
 }
 
 const Crud: React.FC<CrudProps> = props => {
-    
+
     useEffect(() => {
         props.setNumberOfLists(React.Children.count(props.children))
     }, [])
@@ -56,6 +56,21 @@ const Crud: React.FC<CrudProps> = props => {
             )
         })
     )
+
+
+    const renderEditRoutes = resources => (
+        resources?.map((res, index) => {
+            const { name, edit } = res.props
+            if (edit)
+                return (
+                    <Route key={index} path={`/${name}/edit/:id`} exact component={(routeProps) => React.cloneElement(edit, {
+                        ...edit.props,
+                        ...routeProps,
+                        listName: name,
+                    })}/>
+                )
+        })
+    )
     return (
         <Router>
             {NavMenu(props.children)}
@@ -65,6 +80,7 @@ const Crud: React.FC<CrudProps> = props => {
                     {renderListsRoute(props.children)}
                     {renderCreatesRoute(props.children)}
                     <Route path="/about" />
+                    {renderEditRoutes(props.children)}
                 </Switch>
             </div>
         </Router>

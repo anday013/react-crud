@@ -4,6 +4,7 @@ import * as actionTypes from '../../store/actions'
 import provider from '../../provider'
 import './List.css'
 import { listType } from '../../store/stateTypes'
+import { NavLink } from 'react-router-dom'
 
 interface ListProps {
     listURL: string,
@@ -18,6 +19,7 @@ interface ListProps {
 const List: React.FC<ListProps> = props => {
     const { listURL, id, children, lists, setListLoaded, name } = props;
     useEffect(() => {
+        provider.getOne(listURL, 1).then(({ data }) => console.log('getOne', data))
         if (!lists[id]?.listLoaded)
             provider.getList(listURL).then(res => {
                 setListLoaded(name, res.data, id)
@@ -25,47 +27,54 @@ const List: React.FC<ListProps> = props => {
     }, [])
 
     const renderHeaders = (headersArr) => {
-        return headersArr?.map((field, index) => {
-            if (field.type.name === 'TextField')
-                return (
-                    <td key={index}>{field.props.label || field.props.fieldName}</td>
-                )
-            else if(field.type.name === 'ReferenceField') 
-                return (
-                <td key={index}>{field.props.label || field.props.foreignKey}</td> 
-                )
-        })
+        return <tr>
+            {headersArr?.map((field, index) => {
+                if (field.type.name === 'TextField')
+                    return (
+                        <td key={index}>{field.props.label || field.props.fieldName}</td>
+                    )
+                else if (field.type.name === 'ReferenceField')
+                    return (
+                        <td key={index}>{field.props.label || field.props.foreignKey}</td>
+                    )
+            })}
+            {<td>Edit</td>}
+        </tr>
     }
 
     const renderBody = (bodyArr, headersArr) => {
-        return bodyArr?.map((element, index) => (
-            <tr key={index}>
-                {headersArr?.map((field, index2) => {
-                    if (field.type.name === 'TextField')
-                        return (
-                            <td key={index2}>{React.cloneElement(field, { ...field.props, record: element })}</td>
-                        )
-                    else if (field.type.name === 'ReferenceField') {
-                        return (
-                            <td key={index2}>{React.cloneElement(field, {
-                                ...field.props,
-                                lists: lists,
-                                record: element
-                            })}</td>
-                        )
-                    }
-                })}
-            </tr>
-        ))
+        const editButton = (name, id) => <td><NavLink to={`${name}/edit/${id}`} exact>Edit</NavLink></td>
+        const updateFieldProps = (field, newProps) => React.cloneElement(field, {
+            ...field.props,
+            ...newProps
+        })
+        return bodyArr?.map((element, index) => {
+            return (
+                <tr key={index}>
+                    {headersArr?.map((field, index2) => {
+                        if (field.type.name === 'TextField')
+                            return (
+                                <td key={index2}>{updateFieldProps(field, { record: element })}</td>
+                            )
+                        else if (field.type.name === 'ReferenceField') {
+                            return (
+                                <td key={index2}>{updateFieldProps(field, {
+                                    lists: lists,
+                                    record: element
+                                })}</td>
+                            )
+                        }
+                    })}
+                    {editButton(name, element['id'])}
+                </tr>
+            )
+        })
     }
-    console.log('children', children)
     return (
         <div className="list" style={{ overflowX: 'auto' }}>
             <table>
                 <thead>
-                    <tr>
-                        {renderHeaders(children)}
-                    </tr>
+                    {renderHeaders(children)}
                 </thead>
                 <tbody>
                     {renderBody(lists[id]?.data, children)}
